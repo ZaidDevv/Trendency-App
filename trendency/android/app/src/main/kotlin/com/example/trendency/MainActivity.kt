@@ -1,0 +1,6 @@
+package com.example.trendency
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity: FlutterActivity() {
+}
