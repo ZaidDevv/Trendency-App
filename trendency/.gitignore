@@ -9,6 +9,9 @@
 .history
 .svn/
 
+#Env file
+.env
+
 # IntelliJ related
 *.iml
 *.ipr
