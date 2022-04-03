@@ -12,7 +12,7 @@ flutter_native_splash:
   # size of the app. Only one parameter can be used, color and background_image cannot both be set.
   color: "#1f1d36"
 
-  #background_image: "assets/background.png"
+  # background_image: "assets/images/background.png"
 
   image: assets/images/trendency-logo.png
   android_12:

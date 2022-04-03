@@ -13,7 +13,7 @@ class RouteConst {
   static const String REGISTER = '/register';
 
   static final routes = RouteMap(routes: {
-    INITIAL_ROUTE: (_) => MaterialPage(child: WelcomeScreen()),
-    LOGIN: (_) => MaterialPage(child: LoginScreen())
+    INITIAL_ROUTE: (_) => const MaterialPage(child: WelcomeScreen()),
+    LOGIN: (_) => const MaterialPage(child: LoginScreen())
   });
 }
