@@ -5,6 +5,6 @@ import 'package:trendency/app.dart';
 void main() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  Future.delayed(Duration(seconds: 3), () => FlutterNativeSplash.remove());
+  FlutterNativeSplash.remove();
   runApp(const App());
 }
