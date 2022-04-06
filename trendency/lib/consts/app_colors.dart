@@ -16,10 +16,11 @@ const Map<int, Color> color = {
 class AppColor {
   // Prevent instance creation
   const AppColor._();
-  static const MaterialColor primaryMaterial = MaterialColor(0xFF1F1D36, color);
-  static const Color primary = Color(0xFF1F1D36);
-  static const Color secondaryColor = Color(0xFF3F3351);
-  static const Color thirdColor = Color(0xFF85136c);
+  static const MaterialColor primaryMaterial = MaterialColor(0xFFFFFFFA, color);
+  static const Color primary = Color(0xFFFFFFFA);
+  static const Color primaryAccent = Color(0xFF515052);
+  static const Color secondaryColor = Color(0xFFF77d48);
+  static const Color thirdColor = Color(0xFF333138);
   static const Color successColor = Color(0xFF487d3e);
   static const Color failureColor = Color(0xFFd11938);
 }

@@ -14,7 +14,7 @@ class TrendencyAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      systemOverlayStyle: SystemUiOverlayStyle(
+      systemOverlayStyle: const SystemUiOverlayStyle(
         statusBarColor: AppColor.primary,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
@@ -23,9 +23,9 @@ class TrendencyAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: AppColor.primary,
       leading: IconButton(
           onPressed: () => Routemaster.of(context).pop(),
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back_ios,
-            color: Colors.white,
+            color: AppColor.secondaryColor,
           )),
     );
   }

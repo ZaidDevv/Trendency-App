@@ -12,18 +12,37 @@ class App extends StatelessWidget {
     return MaterialApp.router(
       title: 'Trendency',
       theme: ThemeData(
-          primarySwatch: AppColor.primaryMaterial,
-          primaryColor: AppColor.primary,
-          pageTransitionsTheme: const PageTransitionsTheme(
-            builders: {
-              TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-              TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
-              TargetPlatform.macOS: FadeUpwardsPageTransitionsBuilder(),
-            },
-          ),
-          textTheme: GoogleFonts.latoTextTheme(
-            Theme.of(context).textTheme,
-          )),
+        primarySwatch: AppColor.primaryMaterial,
+        primaryColor: AppColor.primary,
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
+            TargetPlatform.macOS: FadeUpwardsPageTransitionsBuilder(),
+          },
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+              primary: AppColor.secondaryColor,
+              shape: (RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                  side: BorderSide(color: Colors.red)))),
+        ),
+        textTheme: GoogleFonts.fjallaOneTextTheme(
+          Theme.of(context).textTheme,
+        ).copyWith(
+            headline1: const TextStyle(
+                fontSize: 28,
+                color: AppColor.thirdColor,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1),
+            bodyText1: const TextStyle(
+                fontSize: 18, color: AppColor.thirdColor, letterSpacing: 1),
+            bodyText2: const TextStyle(
+                fontSize: 16, color: AppColor.primaryAccent, letterSpacing: 1),
+            button: const TextStyle(
+                fontSize: 18, color: AppColor.primary, letterSpacing: 1)),
+      ),
       routeInformationParser: const RoutemasterParser(),
       routerDelegate:
           RoutemasterDelegate(routesBuilder: (context) => RouteConst.routes),
