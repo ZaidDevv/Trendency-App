@@ -22,7 +22,9 @@ class TrendencyAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       backgroundColor: AppColor.primary,
       leading: IconButton(
-          onPressed: () => Routemaster.of(context).pop(),
+          onPressed: () => Routemaster.of(context).history.back()
+              ? null
+              : Routemaster.of(context).pop(),
           icon: const Icon(
             Icons.arrow_back_ios,
             color: AppColor.secondaryColor,

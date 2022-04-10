@@ -6,20 +6,19 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:trendency/consts/app_colors.dart';
-import 'package:trendency/consts/route_consts.dart';
 import 'package:trendency/providers/auth_provider.dart';
 import 'package:trendency/widgets/trendency_app_bar.dart';
 import 'package:trendency/widgets/trendency_text_field.dart';
 import 'package:bottom_drawer/bottom_drawer.dart';
 
-class RegistrationScreen extends StatefulWidget {
-  const RegistrationScreen({Key? key}) : super(key: key);
+class RegistrationFollowupScreen extends StatefulWidget {
+  const RegistrationFollowupScreen({Key? key}) : super(key: key);
 
   @override
-  State<RegistrationScreen> createState() => _RegistrationScreenState();
+  State<RegistrationFollowupScreen> createState() => _RegistrationScreenState();
 }
 
-class _RegistrationScreenState extends State<RegistrationScreen> {
+class _RegistrationScreenState extends State<RegistrationFollowupScreen> {
   final _formKey = GlobalKey<FormState>();
   String? _user;
   String? _password;
@@ -108,8 +107,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           if (_formKey.currentState!.validate() &&
                               _image != null) {
                             _formKey.currentState!.save();
-                            Routemaster.of(context)
-                                .push(RouteConst.REGISTER_FOLLOWUP);
                           }
                         },
                         child: Text(

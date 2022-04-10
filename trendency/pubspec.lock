@@ -43,6 +43,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
+  bottom_drawer:
+    dependency: "direct main"
+    description:
+      name: bottom_drawer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.5"
   bottom_navy_bar:
     dependency: "direct main"
     description:
@@ -680,7 +687,7 @@ packages:
       name: routemaster
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.5"
+    version: "0.10.0-dev5"
   shelf:
     dependency: transitive
     description:

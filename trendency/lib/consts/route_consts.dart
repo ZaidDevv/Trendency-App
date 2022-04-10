@@ -13,13 +13,15 @@ class RouteConst {
   static const String WELCOME_ROUTE = '/';
   static const String WELCOME_FOLLOWUP = '/followup';
   static const String HOME = '/home';
-  static const String LOGIN = '/login';
+  static const String LOGIN = '/welcome/login';
   static const String REGISTER = '/register';
+  static const String REGISTER_FOLLOWUP = '/register/link';
 
   static final routes = RouteMap(routes: {
     WELCOME_ROUTE: (_) => const MaterialPage(child: WelcomeScreen()),
     WELCOME_FOLLOWUP: (_) => const MaterialPage(child: WelcomeFollowup()),
     LOGIN: (_) => const MaterialPage(child: LoginScreen()),
-    REGISTER: (_) => const MaterialPage(child: RegistrationScreen())
+    REGISTER: (_) => const MaterialPage(child: RegistrationScreen()),
+    REGISTER_FOLLOWUP: (_) => const MaterialPage(child: RegistrationScreen()),
   });
 }

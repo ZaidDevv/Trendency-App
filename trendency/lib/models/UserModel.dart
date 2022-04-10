@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:json_annotation/json_annotation.dart';
 
 part 'UserModel.g.dart';
@@ -5,15 +7,23 @@ part 'UserModel.g.dart';
 @JsonSerializable()
 class UserModel {
   final String username;
-  final String id;
-  final List<Object> linked_accounts;
+  final String? id;
+  final List<Object>? linked_accounts;
   final String email;
+  final String? password;
+  final File? image;
+
+  void set linked_accounts(List<Object>? linked_accounts) {
+    this.linked_accounts = linked_accounts;
+  }
 
   UserModel(
       {required this.username,
-      required this.id,
+      this.id,
       required this.email,
-      required this.linked_accounts});
+      this.password,
+      this.image,
+      this.linked_accounts});
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
 

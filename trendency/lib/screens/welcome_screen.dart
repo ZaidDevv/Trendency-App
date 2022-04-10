@@ -34,7 +34,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return GestureDetector(
       onPanUpdate: (details) {
         if (details.delta.dx < 0) {
-          Routemaster.of(context).push(RouteConst.WELCOME_FOLLOWUP);
+          Routemaster.of(context).replace(RouteConst.WELCOME_FOLLOWUP);
         }
       },
       child: Scaffold(
