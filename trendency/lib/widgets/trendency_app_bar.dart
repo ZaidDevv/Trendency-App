@@ -4,23 +4,24 @@ import 'package:routemaster/routemaster.dart';
 import 'package:trendency/consts/app_colors.dart';
 
 class TrendencyAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final double? height;
-
+  final double height;
+  final Color color;
   const TrendencyAppBar({
     Key? key,
-    @required this.height,
+    required this.height,
+    required this.color,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      systemOverlayStyle: const SystemUiOverlayStyle(
-        statusBarColor: AppColor.primary,
+      systemOverlayStyle: SystemUiOverlayStyle(
+        statusBarColor: color,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
       ),
       elevation: 0,
-      backgroundColor: AppColor.primary,
+      backgroundColor: color,
       leading: IconButton(
           onPressed: () => Routemaster.of(context).history.back()
               ? null
@@ -33,5 +34,5 @@ class TrendencyAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(height!);
+  Size get preferredSize => Size.fromHeight(height);
 }

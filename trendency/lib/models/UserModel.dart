@@ -11,7 +11,8 @@ class UserModel {
   final List<Object>? linked_accounts;
   final String email;
   final String? password;
-  final File? image;
+  @JsonKey(name: "profile_image")
+  final String? image_path;
 
   void set linked_accounts(List<Object>? linked_accounts) {
     this.linked_accounts = linked_accounts;
@@ -22,7 +23,7 @@ class UserModel {
       this.id,
       required this.email,
       this.password,
-      this.image,
+      this.image_path,
       this.linked_accounts});
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);

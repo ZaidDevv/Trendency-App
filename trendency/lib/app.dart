@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:trendency/consts/app_colors.dart';
@@ -30,6 +31,10 @@ class App extends StatelessWidget {
                     borderRadius: BorderRadius.circular(18.0),
                     side: BorderSide(color: Colors.red)))),
           ),
+          textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+            elevation: 2,
+          )),
           textTheme: GoogleFonts.fjallaOneTextTheme(
             Theme.of(context).textTheme,
           ).copyWith(

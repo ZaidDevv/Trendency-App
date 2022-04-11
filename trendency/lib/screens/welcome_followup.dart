@@ -32,7 +32,10 @@ class _WelcomeFollowupState extends State<WelcomeFollowup> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: AppColor.primary,
-      appBar: const TrendencyAppBar(height: 40),
+      appBar: const TrendencyAppBar(
+        height: 40,
+        color: AppColor.primary,
+      ),
       body: SafeArea(
         child: AnimatedOpacity(
           opacity: _currentOpacity,

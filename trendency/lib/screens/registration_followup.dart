@@ -1,15 +1,20 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:trendency/consts/app_colors.dart';
+import 'package:trendency/consts/route_consts.dart';
 import 'package:trendency/providers/auth_provider.dart';
+import 'package:trendency/widgets/instagram_icon.dart';
 import 'package:trendency/widgets/trendency_app_bar.dart';
 import 'package:trendency/widgets/trendency_text_field.dart';
 import 'package:bottom_drawer/bottom_drawer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RegistrationFollowupScreen extends StatefulWidget {
   const RegistrationFollowupScreen({Key? key}) : super(key: key);
@@ -20,11 +25,6 @@ class RegistrationFollowupScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationFollowupScreen> {
   final _formKey = GlobalKey<FormState>();
-  String? _user;
-  String? _password;
-  String? _email;
-  File? _image;
-  double _currentOpacity = 0;
 
   BottomDrawerController controller = BottomDrawerController();
 
@@ -41,146 +41,70 @@ class _RegistrationScreenState extends State<RegistrationFollowupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    InAppWebViewController _controller;
     return Scaffold(
-        appBar: const TrendencyAppBar(height: 40),
         resizeToAvoidBottomInset: false,
         backgroundColor: AppColor.primary,
         body: Stack(children: [
-          Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Center(
-                child: Wrap(
-                  direction: Axis.vertical,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  alignment: WrapAlignment.center,
-                  spacing: 25,
-                  children: [
-                    Text(
-                      "Register",
-                      style: Theme.of(context).textTheme.headline1,
-                    ),
-                    CircleAvatar(
-                      backgroundImage:
-                          _image != null ? FileImage(_image!) : null,
-                      backgroundColor: AppColor.secondaryColor,
-                      radius: 65,
-                      child: IconButton(
-                        icon: const Icon(FontAwesomeIcons.camera),
-                        onPressed: () async {
-                          await buildBottomSheet(context);
-                        },
-                        color: AppColor.primary,
-                      ),
-                    ),
-                    TrendencyTextField(
-                        hidden: false,
-                        width: 350,
-                        hint: "Username",
-                        icon: FontAwesomeIcons.user,
-                        isRequired: true,
-                        callback: (val) => _user = val!),
-                    TrendencyTextField(
-                        hidden: true,
-                        width: 350,
-                        hint: "Password",
-                        icon: FontAwesomeIcons.asterisk,
-                        isRequired: true,
-                        callback: (val) => _password = val!),
-                    TrendencyTextField(
-                        hidden: false,
-                        width: 350,
-                        hint: "Email",
-                        icon: FontAwesomeIcons.envelope,
-                        isRequired: true,
-                        callback: (val) {
-                          _email = val!;
-                          if (!RegExp(
-                                  r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                              .hasMatch(val)) {}
-                        }),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            minimumSize: const Size(250, 60)),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate() &&
-                              _image != null) {
-                            _formKey.currentState!.save();
-                          }
-                        },
-                        child: Text(
-                          "Continue",
-                          style: Theme.of(context).textTheme.button,
-                        )),
-                    Consumer<AuthProvider>(builder: (_, value, __) {
-                      return const SizedBox.shrink();
-                    }),
-                  ],
+          Center(
+            child: Wrap(
+              direction: Axis.horizontal,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              alignment: WrapAlignment.center,
+              runSpacing: 25,
+              children: [
+                Text(
+                  "Link your accounts",
+                  style: Theme.of(context).textTheme.headline1,
                 ),
-              ),
+                SignInButton(
+                  Buttons.Twitter,
+                  padding: EdgeInsets.all(15),
+                  text: "Link Twitter",
+                  elevation: 3,
+                  onPressed: () {
+                    Routemaster.of(context).push(RouteConst.LINK_TWITTER);
+                  },
+                ),
+                SignInButton(
+                  Buttons.Reddit,
+                  padding: EdgeInsets.all(15),
+                  text: "Link Reddit",
+                  elevation: 3,
+                  onPressed: () {
+                    _launchURL(
+                        'http://192.168.0.122:4080/api/3rd-party/reddit');
+                  },
+                ),
+                TextButton.icon(
+                    icon: const InstagramIcon(size: 20),
+                    onPressed: () {},
+                    style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 27),
+                        alignment: Alignment.centerLeft,
+                        minimumSize: Size(250, 50),
+                        backgroundColor: AppColor.secondaryColor),
+                    label: Text("Link Instagram")),
+                const SizedBox(height: 25),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(340, 60)),
+                    onPressed: () {},
+                    child: Text(
+                      "Continue",
+                      style: Theme.of(context).textTheme.button,
+                    )),
+                Consumer<AuthProvider>(builder: (_, value, __) {
+                  return const SizedBox.shrink();
+                }),
+              ],
             ),
           ),
           // TrendencyDrawer(controller: controller),
         ]));
   }
 
-  buildBottomSheet(BuildContext context) async {
-    showModalBottomSheet(
-        backgroundColor: AppColor.secondaryColor,
-        barrierColor: AppColor.primaryAccent.withOpacity(.1),
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(10), topRight: Radius.circular(10))),
-        context: context,
-        builder: (context) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: const Icon(
-                  Icons.photo,
-                  color: AppColor.primary,
-                ),
-                title: Text(
-                  'Choose From Gallery',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText1
-                      ?.copyWith(color: AppColor.primary),
-                ),
-                onTap: () {
-                  setImage(ImageSource.gallery);
-                },
-              ),
-              ListTile(
-                leading: const Icon(
-                  FontAwesomeIcons.camera,
-                  color: AppColor.primary,
-                ),
-                title: Text(
-                  'Take a photo',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText1
-                      ?.copyWith(color: AppColor.primary),
-                ),
-                onTap: () {
-                  setImage(ImageSource.camera);
-                },
-              ),
-            ],
-          );
-        });
-  }
-
-  Future<void> setImage(ImageSource type) async {
-    final XFile? image = await _picker.pickImage(source: type).then((value) {
-      if (value != null) {
-        setState(() {
-          _image = File(value.path);
-        });
-      }
-    });
+  void _launchURL(String url) async {
+    if (!await launch(url)) throw 'Could not launch $url';
   }
 }

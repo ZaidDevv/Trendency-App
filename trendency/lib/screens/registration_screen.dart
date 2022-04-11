@@ -1,13 +1,18 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:trendency/consts/app_colors.dart';
 import 'package:trendency/consts/route_consts.dart';
+import 'package:trendency/models/UserModel.dart';
 import 'package:trendency/providers/auth_provider.dart';
+import 'package:trendency/utils/trendency_snackbar.dart';
 import 'package:trendency/widgets/trendency_app_bar.dart';
 import 'package:trendency/widgets/trendency_text_field.dart';
 import 'package:bottom_drawer/bottom_drawer.dart';
@@ -24,26 +29,54 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   String? _user;
   String? _password;
   String? _email;
-  File? _image;
-  double _currentOpacity = 0;
+  String? _image;
 
   BottomDrawerController controller = BottomDrawerController();
 
   final ImagePicker _picker = ImagePicker();
+
+  Future<void> setImage(ImageSource type) async {
+    await _picker.pickImage(source: type).then((value) {
+      if (value != null) {
+        setState(() {
+          _image = value.path;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    controller.close();
+  }
+
   @override
   void initState() {
     super.initState();
-    // WidgetsBinding.instance?.addPostFrameCallback((_) {
-    //   setState(() {
-    //     _currentOpacity = 1;
-    //   });
-    // });
+    final notifier = context.read<AuthProvider>();
+    void listener() {
+      if (notifier.state == AuthState.loaded) {
+        Routemaster.of(context).push(RouteConst.REGISTER_FOLLOWUP);
+      } else if (notifier.state == AuthState.failed) {
+        TrendencySnackbar.show(
+            title: "Registration Failed",
+            content: notifier.failure!.message,
+            isError: true);
+      }
+    }
+
+    notifier.addListener(listener);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: const TrendencyAppBar(height: 40),
+        appBar: const TrendencyAppBar(
+          height: 40,
+          color: AppColor.primary,
+        ),
         resizeToAvoidBottomInset: false,
         backgroundColor: AppColor.primary,
         body: Stack(children: [
@@ -63,7 +96,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     ),
                     CircleAvatar(
                       backgroundImage:
-                          _image != null ? FileImage(_image!) : null,
+                          _image != null ? FileImage(File(_image!)) : null,
                       backgroundColor: AppColor.secondaryColor,
                       radius: 65,
                       child: IconButton(
@@ -104,27 +137,37 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             minimumSize: const Size(250, 60)),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate() &&
-                              _image != null) {
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
                             _formKey.currentState!.save();
-                            Routemaster.of(context)
-                                .push(RouteConst.REGISTER_FOLLOWUP);
+                            if (Provider.of<AuthProvider>(context,
+                                        listen: false)
+                                    .userModel !=
+                                null) {
+                              Routemaster.of(context)
+                                  .push(RouteConst.REGISTER_FOLLOWUP);
+                              return;
+                            }
+                            UserModel model = UserModel(
+                                username: _user!,
+                                email: _email!,
+                                image_path: _image,
+                                password: _password);
+
+                            await Provider.of<AuthProvider>(context,
+                                    listen: false)
+                                .registerUser(model);
                           }
                         },
                         child: Text(
-                          "Continue",
+                          "Sign-up",
                           style: Theme.of(context).textTheme.button,
                         )),
-                    Consumer<AuthProvider>(builder: (_, value, __) {
-                      return const SizedBox.shrink();
-                    }),
                   ],
                 ),
               ),
             ),
           ),
-          // TrendencyDrawer(controller: controller),
         ]));
   }
 
@@ -175,15 +218,5 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             ],
           );
         });
-  }
-
-  Future<void> setImage(ImageSource type) async {
-    final XFile? image = await _picker.pickImage(source: type).then((value) {
-      if (value != null) {
-        setState(() {
-          _image = File(value.path);
-        });
-      }
-    });
   }
 }

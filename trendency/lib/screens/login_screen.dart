@@ -40,7 +40,10 @@ class _LoginScreenState extends State<LoginScreen> {
         FocusManager.instance.primaryFocus?.unfocus();
       }),
       child: Scaffold(
-          appBar: TrendencyAppBar(height: 40),
+          appBar: TrendencyAppBar(
+            height: 40,
+            color: AppColor.primary,
+          ),
           resizeToAvoidBottomInset: true,
           backgroundColor: AppColor.primary,
           body: SingleChildScrollView(
