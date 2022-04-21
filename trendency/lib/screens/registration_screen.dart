@@ -12,6 +12,7 @@ import 'package:trendency/consts/app_colors.dart';
 import 'package:trendency/consts/route_consts.dart';
 import 'package:trendency/models/UserModel.dart';
 import 'package:trendency/providers/auth_provider.dart';
+import 'package:trendency/screens/registration_followup.dart';
 import 'package:trendency/utils/trendency_snackbar.dart';
 import 'package:trendency/widgets/trendency_app_bar.dart';
 import 'package:trendency/widgets/trendency_text_field.dart';
@@ -34,6 +35,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   BottomDrawerController controller = BottomDrawerController();
 
   final ImagePicker _picker = ImagePicker();
+  var notifier;
 
   Future<void> setImage(ImageSource type) async {
     await _picker.pickImage(source: type).then((value) {
@@ -45,29 +47,33 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     });
   }
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    controller.close();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    final notifier = context.read<AuthProvider>();
-    void listener() {
-      if (notifier.state == AuthState.loaded) {
-        Routemaster.of(context).push(RouteConst.REGISTER_FOLLOWUP);
-      } else if (notifier.state == AuthState.failed) {
+  void listener() {
+    if (notifier.state == AuthState.registered) {
+      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+        Routemaster.of(context).replace(RouteConst.REGISTER_FOLLOWUP);
+      });
+    } else if (notifier.state == AuthState.failed) {
+      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
         TrendencySnackbar.show(
             title: "Registration Failed",
             content: notifier.failure!.message,
             isError: true);
-      }
+      });
     }
+  }
 
+  @override
+  void initState() {
+    notifier = context.read<AuthProvider>();
     notifier.addListener(listener);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    notifier.removeListener(listener);
+    controller.close();
+    super.dispose();
   }
 
   @override
@@ -140,23 +146,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             _formKey.currentState!.save();
-                            if (Provider.of<AuthProvider>(context,
-                                        listen: false)
-                                    .userModel !=
-                                null) {
-                              Routemaster.of(context)
-                                  .push(RouteConst.REGISTER_FOLLOWUP);
-                              return;
-                            }
                             UserModel model = UserModel(
+                                linked_accounts: [],
                                 username: _user!,
                                 email: _email!,
                                 image_path: _image,
                                 password: _password);
 
-                            await Provider.of<AuthProvider>(context,
-                                    listen: false)
-                                .registerUser(model);
+                            await notifier.registerUser(model);
                           }
                         },
                         child: Text(

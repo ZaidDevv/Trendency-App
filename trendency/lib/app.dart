@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:trendency/consts/app_colors.dart';
@@ -29,13 +28,9 @@ class App extends StatelessWidget {
                 primary: AppColor.secondaryColor,
                 shape: (RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
-                    side: BorderSide(color: Colors.red)))),
+                    side: const BorderSide(color: AppColor.primary)))),
           ),
-          textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-            elevation: 2,
-          )),
-          textTheme: GoogleFonts.fjallaOneTextTheme(
+          textTheme: GoogleFonts.kanitTextTheme(
             Theme.of(context).textTheme,
           ).copyWith(
               headline1: const TextStyle(
@@ -52,7 +47,7 @@ class App extends StatelessWidget {
               button: const TextStyle(
                   fontSize: 18, color: AppColor.primary, letterSpacing: 1)),
         ),
-        routeInformationParser: const RoutemasterParser(),
+        routeInformationParser: RoutemasterParser(),
         routerDelegate:
             RoutemasterDelegate(routesBuilder: (context) => RouteConst.routes),
       ),

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:json_annotation/json_annotation.dart';
 
 part 'UserModel.g.dart';
@@ -8,13 +6,15 @@ part 'UserModel.g.dart';
 class UserModel {
   final String username;
   final String? id;
-  final List<Object>? linked_accounts;
+  final List<LinkedAccountsModel> linked_accounts;
   final String email;
   final String? password;
   @JsonKey(name: "profile_image")
   final String? image_path;
+  String? accessToken;
+  String? refreshToken;
 
-  void set linked_accounts(List<Object>? linked_accounts) {
+  void set linked_accounts(List<LinkedAccountsModel> linked_accounts) {
     this.linked_accounts = linked_accounts;
   }
 
@@ -24,7 +24,9 @@ class UserModel {
       required this.email,
       this.password,
       this.image_path,
-      this.linked_accounts});
+      this.accessToken,
+      this.refreshToken,
+      required this.linked_accounts});
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
 
@@ -32,12 +34,13 @@ class UserModel {
 }
 
 @JsonSerializable()
-class AuthModel {
-  final String accessToken;
-  final String refreshtoken;
-  AuthModel({required this.refreshtoken, required this.accessToken});
-  factory AuthModel.fromJson(Map<String, dynamic> json) =>
-      _$AuthModelFromJson(json);
+class LinkedAccountsModel {
+  final String platform;
+  final String id;
+  LinkedAccountsModel({required this.id, required this.platform});
 
-  Map<String, dynamic> toJson() => _$AuthModelToJson(this);
+  factory LinkedAccountsModel.fromJson(Map<String, dynamic> json) =>
+      _$LinkedAccountsModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$LinkedAccountsModelToJson(this);
 }

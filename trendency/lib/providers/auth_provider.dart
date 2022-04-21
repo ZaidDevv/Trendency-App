@@ -3,14 +3,14 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:trendency/models/UserModel.dart';
+import 'package:trendency/utils/api_client.dart';
 import 'package:trendency/utils/failure.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:path/path.dart';
-import 'package:async/async.dart';
-import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:trendency/utils/service_locator.dart';
 
-enum AuthState { initial, loading, loaded, failed }
+enum AuthState { initial, loading, loggedIn, registered, failed }
 
 class AuthProvider with ChangeNotifier {
   UserModel? _userModel;
@@ -19,11 +19,16 @@ class AuthProvider with ChangeNotifier {
   AuthState _state = AuthState.initial;
   AuthState get state => _state;
 
+  bool _isRegistered = false;
+  bool get isRegistered => _isRegistered;
+
   Failure? _failure;
   Failure? get failure => _failure;
 
   Future<void> loginUser(credentials) async {
     try {
+      _state = AuthState.loading;
+      notifyListeners();
       final response = await http.post(
           Uri.parse("${dotenv.env['BASE_URL']!}/api/user/auth/login"),
           headers: {
@@ -33,7 +38,10 @@ class AuthProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final user = json.decode(response.body);
         _userModel = UserModel.fromJson(user);
-        _state = AuthState.loaded;
+
+        persistAuthCredentials(user["accessToken"], user["refreshToken"]);
+        _state = AuthState.loggedIn;
+        notifyListeners();
       } else {
         _state = AuthState.failed;
         throw HttpException("${response.body}");
@@ -41,7 +49,6 @@ class AuthProvider with ChangeNotifier {
     } catch (e) {
       _state = AuthState.failed;
       _failure = Failure(e.toString());
-    } finally {
       notifyListeners();
     }
   }
@@ -69,20 +76,21 @@ class AuthProvider with ChangeNotifier {
 
       response.stream.transform(utf8.decoder).listen((value) async {
         var result = jsonDecode(value);
-        print(result);
 
         if (response.statusCode == 200) {
           _userModel = UserModel.fromJson(result);
-          await persistAuthCredentials(
-              result["auth"]["accessToken"], result["auth"]["refreshToken"]);
-          _state = AuthState.loaded;
-          notifyListeners();
+          print(userModel!.accessToken!);
+          persistAuthCredentials(
+              _userModel!.accessToken!, _userModel!.refreshToken!);
+          _userModel!.accessToken = result["accessToken"];
+          _userModel!.refreshToken = result["refreshToken"];
+          _state = AuthState.registered;
         } else {
           _state = AuthState.failed;
           _failure =
               Failure("Request Has failed with status ${response.statusCode}");
-          notifyListeners();
         }
+        notifyListeners();
       });
     } catch (e) {
       _state = AuthState.failed;
@@ -97,5 +105,6 @@ class AuthProvider with ChangeNotifier {
 
     await storage.write(key: "refreshToken", value: refreshToken);
     await storage.write(key: "accessToken", value: accessToken);
+    return Future.value();
   }
 }

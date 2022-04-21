@@ -6,11 +6,10 @@ import 'package:trendency/consts/app_colors.dart';
 class TrendencyAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double height;
   final Color color;
-  const TrendencyAppBar({
-    Key? key,
-    required this.height,
-    required this.color,
-  }) : super(key: key);
+  final String? title;
+  const TrendencyAppBar(
+      {Key? key, required this.height, required this.color, this.title})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +22,7 @@ class TrendencyAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       backgroundColor: color,
       leading: IconButton(
-          onPressed: () => Routemaster.of(context).history.back()
-              ? null
-              : Routemaster.of(context).pop(),
+          onPressed: () => Routemaster.of(context).pop(),
           icon: const Icon(
             Icons.arrow_back_ios,
             color: AppColor.secondaryColor,

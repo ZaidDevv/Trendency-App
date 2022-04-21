@@ -49,5 +49,10 @@
 		<string>Uploading media to instagram, twitter, etc..</string>
 		<key>UIStatusBarHidden</key>
 		<true/>
+			<key>NSAppTransportSecurity</key>
+		<dict>
+			<key>NSAllowsArbitraryLoads</key>
+			<true/>
+		</dict>
 	</dict>
 </plist>

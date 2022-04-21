@@ -15,18 +15,6 @@ class WelcomeFollowup extends StatefulWidget {
 }
 
 class _WelcomeFollowupState extends State<WelcomeFollowup> {
-  double _currentOpacity = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      setState(() {
-        _currentOpacity = 1;
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,71 +25,67 @@ class _WelcomeFollowupState extends State<WelcomeFollowup> {
         color: AppColor.primary,
       ),
       body: SafeArea(
-        child: AnimatedOpacity(
-          opacity: _currentOpacity,
-          duration: const Duration(milliseconds: 700),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CarouselSlider(
-                  options: CarouselOptions(
-                    height: 170.0,
-                    autoPlayCurve: Curves.easeInBack,
-                    autoPlay: true,
-                    autoPlayInterval: Duration(milliseconds: 2200),
-                    autoPlayAnimationDuration:
-                        const Duration(milliseconds: 400),
-                    enableInfiniteScroll: true,
-                  ),
-                  items: const [
-                    Icon(
-                      FontAwesomeIcons.reddit,
-                      size: 65,
-                      color: AppColor.secondaryColor,
-                    ),
-                    Icon(
-                      FontAwesomeIcons.twitter,
-                      size: 100,
-                      color: Colors.blue,
-                    ),
-                    InstagramIcon(size: 100)
-                  ]),
-              Text(
-                'Browse posts from your favorite platforms\n',
-                style: Theme.of(context).textTheme.headline1,
-                textAlign: TextAlign.center,
-              ),
-              Text('Sign up now, It\'s totally free!',
-                  style: Theme.of(context).textTheme.bodyText2),
-              const Expanded(child: SizedBox.shrink()),
-              ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(300, 60)),
-                  onPressed: () => Routemaster.of(context).push('/register'),
-                  child: Text(
-                    "Sign up",
-                    style: Theme.of(context).textTheme.button,
-                  )),
-              const SizedBox(height: 15),
-              Text(
-                "Already have an account?",
-                style: Theme.of(context).textTheme.bodyText2,
-              ),
-              const SizedBox(height: 8),
-              TextButton(
-                onPressed: () => Routemaster.of(context).push(RouteConst.LOGIN),
-                child: Text(
-                  "Login",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText1
-                      ?.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CarouselSlider(
+                options: CarouselOptions(
+                  height: 170.0,
+                  autoPlayCurve: Curves.easeInBack,
+                  autoPlay: true,
+                  autoPlayInterval: const Duration(milliseconds: 1800),
+                  autoPlayAnimationDuration: const Duration(milliseconds: 400),
+                  enableInfiniteScroll: true,
                 ),
+                items: const [
+                  Icon(
+                    FontAwesomeIcons.reddit,
+                    size: 65,
+                    color: AppColor.secondaryColor,
+                  ),
+                  Icon(
+                    FontAwesomeIcons.twitter,
+                    size: 100,
+                    color: Colors.blue,
+                  ),
+                  InstagramIcon(size: 100)
+                ]),
+            Text(
+              'Browse posts from your favorite platforms\n',
+              style: Theme.of(context).textTheme.headline1,
+              textAlign: TextAlign.center,
+            ),
+            Text('Sign up now, It\'s totally free!',
+                style: Theme.of(context).textTheme.bodyText2),
+            const Expanded(child: SizedBox.shrink()),
+            ElevatedButton(
+                style:
+                    ElevatedButton.styleFrom(minimumSize: const Size(300, 60)),
+                onPressed: () => Routemaster.of(context).push('/register'),
+                child: Text(
+                  "Sign up",
+                  style: Theme.of(context).textTheme.button,
+                )),
+            const SizedBox(height: 15),
+            Text(
+              "Already have an account?",
+              style: Theme.of(context).textTheme.bodyText2,
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () =>
+                  Routemaster.of(context).replace(RouteConst.LOGIN),
+              child: Text(
+                "Login",
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1
+                    ?.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 14)
-            ],
-          ),
+            ),
+            const SizedBox(height: 14)
+          ],
         ),
       ),
     );

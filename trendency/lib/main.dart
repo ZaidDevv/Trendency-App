@@ -3,19 +3,30 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:trendency/app.dart';
 import 'package:trendency/providers/auth_provider.dart';
+import 'package:trendency/providers/post_provider.dart';
+import 'package:trendency/providers/reddit_post_provider.dart';
+import 'package:trendency/providers/user_provider.dart';
+import 'package:trendency/utils/api_client.dart';
+import 'package:trendency/utils/service_locator.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   await dotenv.load(fileName: ".env");
   await initializeWebAppView();
+  await setUpLocator();
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => AuthProvider()),
+    ChangeNotifierProvider(create: (context) => UserProvider()),
+    ChangeNotifierProvider(create: (context) => RedditPostProvider()),
+    ChangeNotifierProvider(create: (context) => PostProvider()),
   ], child: const GetMaterialApp(home: App())));
 }
 

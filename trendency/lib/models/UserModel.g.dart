@@ -11,9 +11,11 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       id: json['id'] as String?,
       email: json['email'] as String,
       password: json['password'] as String?,
-      image_path: json['image_path'] as String?,
-      linked_accounts: (json['linked_accounts'] as List<dynamic>?)
-          ?.map((e) => e as Object)
+      image_path: json['profile_image'] as String?,
+      accessToken: json['accessToken'] as String?,
+      refreshToken: json['refreshToken'] as String?,
+      linked_accounts: (json['linked_accounts'] as List<dynamic>)
+          .map((e) => LinkedAccountsModel.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
@@ -23,15 +25,20 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'linked_accounts': instance.linked_accounts,
       'email': instance.email,
       'password': instance.password,
-      'image_path': instance.image_path,
+      'profile_image': instance.image_path,
+      'accessToken': instance.accessToken,
+      'refreshToken': instance.refreshToken,
     };
 
-AuthModel _$AuthModelFromJson(Map<String, dynamic> json) => AuthModel(
-      refreshtoken: json['refreshtoken'] as String,
-      accessToken: json['accessToken'] as String,
+LinkedAccountsModel _$LinkedAccountsModelFromJson(Map<String, dynamic> json) =>
+    LinkedAccountsModel(
+      id: json['id'] as String,
+      platform: json['platform'] as String,
     );
 
-Map<String, dynamic> _$AuthModelToJson(AuthModel instance) => <String, dynamic>{
-      'accessToken': instance.accessToken,
-      'refreshtoken': instance.refreshtoken,
+Map<String, dynamic> _$LinkedAccountsModelToJson(
+        LinkedAccountsModel instance) =>
+    <String, dynamic>{
+      'platform': instance.platform,
+      'id': instance.id,
     };
