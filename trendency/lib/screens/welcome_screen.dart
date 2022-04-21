@@ -25,7 +25,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         if (value == null) {
           return;
         } else if (!Jwt.isExpired(value)) {
-          Routemaster.of(context).replace(RouteConst.HOME);
+          // Routemaster.of(context).replace(RouteConst.HOME);
         }
       });
       Future.delayed(Duration(seconds: 1), () => FlutterNativeSplash.remove());

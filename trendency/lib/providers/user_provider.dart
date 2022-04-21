@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:trendency/models/UserModel.dart';
 import 'package:trendency/utils/api_client.dart';
 import 'package:trendency/utils/failure.dart';
-import 'package:trendency/utils/service_locator.dart';
 
 enum UserState { initial, loading, loaded, failed }
 
@@ -18,22 +17,23 @@ class UserProvider with ChangeNotifier {
   Failure? _failure;
   Failure? get failure => _failure;
 
-  final ApiClient _client = locator();
+  static final client = ApiClient();
 
   Future<void> fetchProfile(id) async {
     _state = UserState.loading;
     notifyListeners();
     try {
-      var response = await _client.get("/api/user/$id", withAuth: true);
+      var response =
+          await client.get(endpoint: "/api/user/$id", withAuth: true);
       if (response.statusCode == 200) {
-        final user = json.decode(response.body);
+        final user = json.decode(response.data);
         _userModel = UserModel.fromJson(user);
         _state = UserState.loaded;
-        print(response.body);
+        print(response.data);
         notifyListeners();
       } else {
         _state = UserState.failed;
-        throw HttpException("${response.body}");
+        throw HttpException("${response.data}");
       }
     } catch (e) {
       _state = UserState.failed;
@@ -45,12 +45,13 @@ class UserProvider with ChangeNotifier {
 
   Future<void> getRedditPosts() async {
     try {
-      var response = await _client.get("/api/reddit/threads", withAuth: true);
+      var response =
+          await client.get(endpoint: "/api/reddit/threads", withAuth: true);
       if (response.statusCode == 200) {
-        print(response.body);
+        print(response.data);
       } else {
         _state = UserState.failed;
-        throw HttpException("${response.body}");
+        throw HttpException("${response.data}");
       }
     } catch (e) {
       _state = UserState.failed;

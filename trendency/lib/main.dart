@@ -11,8 +11,6 @@ import 'package:trendency/providers/auth_provider.dart';
 import 'package:trendency/providers/post_provider.dart';
 import 'package:trendency/providers/reddit_post_provider.dart';
 import 'package:trendency/providers/user_provider.dart';
-import 'package:trendency/utils/api_client.dart';
-import 'package:trendency/utils/service_locator.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +18,6 @@ void main() async {
 
   await dotenv.load(fileName: ".env");
   await initializeWebAppView();
-  await setUpLocator();
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => AuthProvider()),

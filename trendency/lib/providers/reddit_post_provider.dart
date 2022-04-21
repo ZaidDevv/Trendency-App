@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
-import 'package:trendency/models/UserModel.dart';
 import 'package:trendency/utils/api_client.dart';
 import 'package:trendency/utils/failure.dart';
-import 'package:trendency/utils/service_locator.dart';
 
 enum RedditPost { initial, loading, loaded, failed }
 
@@ -14,22 +12,21 @@ class RedditPostProvider with ChangeNotifier {
 
   Failure? _failure;
   Failure? get failure => _failure;
+  static final client = ApiClient();
 
   Future<void> vote({required String id, required int dir}) async {
-    final ApiClient _client = locator();
-
     _state = RedditPost.loading;
     notifyListeners();
     try {
-      var response = await _client.post("/api/reddit/vote?id=$id&dir=$dir",
-          withAuth: true);
+      var response = await client.post(
+          endpoint: "/api/reddit/vote?id=$id&dir=$dir", withAuth: true);
       if (response.statusCode == 200) {
-        final user = json.decode(response.body);
+        final user = json.decode(response.data);
         _state = RedditPost.loaded;
         notifyListeners();
       } else {
         _state = RedditPost.failed;
-        throw HttpException("${response.body}");
+        throw HttpException("${response.data}");
       }
     } catch (e) {
       _state = RedditPost.failed;

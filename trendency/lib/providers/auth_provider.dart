@@ -3,12 +3,10 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:trendency/models/UserModel.dart';
-import 'package:trendency/utils/api_client.dart';
 import 'package:trendency/utils/failure.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
-import 'package:trendency/utils/service_locator.dart';
 
 enum AuthState { initial, loading, loggedIn, registered, failed }
 

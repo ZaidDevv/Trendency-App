@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       TextButton.icon(
                           onPressed: () => {},
-                          icon: Icon(FontAwesomeIcons.doorOpen,
+                          icon: const Icon(FontAwesomeIcons.doorOpen,
                               color: AppColor.secondaryColor),
                           label: Text(
                             "Logout",

@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:trendency/models/RedditVideo.dart';
 import 'package:trendency/models/SecureMedia.dart';
 
 part 'PostModel.g.dart';
