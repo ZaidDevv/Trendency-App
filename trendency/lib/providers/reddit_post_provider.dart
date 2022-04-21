@@ -21,7 +21,7 @@ class RedditPostProvider with ChangeNotifier {
       var response = await client.post(
           endpoint: "/api/reddit/vote?id=$id&dir=$dir", withAuth: true);
       if (response.statusCode == 200) {
-        final user = json.decode(response.data);
+        final user = response.data;
         _state = RedditPost.loaded;
         notifyListeners();
       } else {

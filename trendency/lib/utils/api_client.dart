@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:core';
-
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:jwt_decode/jwt_decode.dart';
-import 'package:trendency/utils/failure.dart';
 
 class ApiClient {
   late Dio _dio;
@@ -19,26 +18,31 @@ class ApiClient {
   factory ApiClient() => _instance;
 
   ApiClient._internal() {
+    var cookieJar = CookieJar();
     _dio = Dio(options);
+    _dio.interceptors.add(CookieManager(cookieJar));
+
     _dio.interceptors
         .add(InterceptorsWrapper(onError: (refreshTokenInterceptor)));
   }
 
   Future<void> refreshTokenInterceptor(
       DioError error, ErrorInterceptorHandler handler) async {
+    print(error.message);
     try {
       if (error.response!.statusCode == 401) {
         String? refreshToken =
             await const FlutterSecureStorage().read(key: "refreshToken");
-        var resp = await _dio.post("/api/user/auth/refresh_token",
+        var response = await _dio.post("/api/user/auth/refresh_token",
             data: jsonEncode(<String, String>{
               'refreshToken': refreshToken!,
             }));
-        if (resp.statusCode == 200) {
+        if (response.statusCode == 200) {
+          print(response.data);
           await persistAuthCredentials(
-              resp.data["accessToken"], resp.data["refreshToken"]);
-          options.headers["authorization"] = resp.data["accessToken"];
-          handler.resolve(resp);
+              response.data["accessToken"], response.data["refreshToken"]);
+          options.headers["authorization"] = response.data["accessToken"];
+          handler.resolve(response);
         }
       }
     } on DioError catch (error) {

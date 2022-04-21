@@ -1,9 +1,6 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:jwt_decode/jwt_decode.dart';
-import 'package:provider/provider.dart';
 import 'package:trendency/consts/app_colors.dart';
 import 'package:trendency/utils/paged_post_list_view.dart';
 

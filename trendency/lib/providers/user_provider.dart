@@ -26,10 +26,9 @@ class UserProvider with ChangeNotifier {
       var response =
           await client.get(endpoint: "/api/user/$id", withAuth: true);
       if (response.statusCode == 200) {
-        final user = json.decode(response.data);
+        final user = response.data;
         _userModel = UserModel.fromJson(user);
         _state = UserState.loaded;
-        print(response.data);
         notifyListeners();
       } else {
         _state = UserState.failed;

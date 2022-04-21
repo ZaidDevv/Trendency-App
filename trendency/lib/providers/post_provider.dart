@@ -29,7 +29,7 @@ class PostProvider with ChangeNotifier {
           withAuth: true);
 
       if (response.statusCode == 200) {
-        var posts = (jsonDecode(response.data)["redditPosts"] as List)
+        var posts = (response.data["redditPosts"] as List)
             .map((post) => PostModel.fromJson(post));
 
         _state = PostState.loaded;

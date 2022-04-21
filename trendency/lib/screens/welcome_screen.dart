@@ -6,7 +6,6 @@ import 'package:lottie/lottie.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:trendency/consts/app_colors.dart';
 import 'package:trendency/consts/route_consts.dart';
-import 'package:trendency/utils/inappbrowser.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
