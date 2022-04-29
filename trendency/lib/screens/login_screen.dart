@@ -12,6 +12,7 @@ import 'package:trendency/providers/user_provider.dart';
 import 'package:trendency/utils/trendency_snackbar.dart';
 
 import 'package:trendency/widgets/trendency_app_bar.dart';
+import 'package:trendency/widgets/trendency_spinner.dart';
 import 'package:trendency/widgets/trendency_text_field.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -30,6 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void listener() {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       if (notifier.state == AuthState.loggedIn) {
+        context.read<UserProvider>().fetchProfile(notifier.userModel.id);
         WidgetsBinding.instance!.addPostFrameCallback(
             (_) => Routemaster.of(context).replace(RouteConst.HOME));
       } else if (notifier.state == AuthState.failed) {
@@ -63,8 +65,9 @@ class _LoginScreenState extends State<LoginScreen> {
       }),
       child: Scaffold(
           appBar: const TrendencyAppBar(
+            isDismissable: true,
             height: 40,
-            color: AppColor.primary,
+            color: Colors.transparent,
           ),
           resizeToAvoidBottomInset: true,
           backgroundColor: AppColor.primary,
@@ -135,12 +138,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Consumer<AuthProvider>(builder: (_, value, __) {
                         if (value.state == AuthState.loading) {
-                          return const Center(
-                              child: SpinKitThreeBounce(
-                            color: AppColor.primaryAccent,
-                          ));
+                          return const Center(child: TrendencySpinner());
                         }
-                        return SizedBox.shrink();
+                        return const SizedBox.shrink();
                       }),
                     ]),
               ),

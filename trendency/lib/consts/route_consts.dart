@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:trendency/screens/home_screen.dart';
 import 'package:trendency/screens/login_screen.dart';
+import 'package:trendency/screens/profile_screen.dart';
 import 'package:trendency/screens/registration_followup.dart';
 import 'package:trendency/screens/welcome_followup.dart';
 import 'package:trendency/screens/welcome_screen.dart';
@@ -24,6 +25,8 @@ class RouteConst {
   static const String LINK_TWITTER = '$REGISTER_FOLLOWUP/twitter';
   static const String LINK_REDDIT = '$REGISTER_FOLLOWUP/reddit';
   static const String TIMELINE_HERO = "/home/timeline_hero";
+  static const String PROFILE = '/profile';
+
   static final routes = RouteMap(routes: {
     WELCOME_ROUTE: (_) => const MaterialPage(child: WelcomeScreen()),
     WELCOME_FOLLOWUP: (_) => const MaterialPage(child: WelcomeFollowup()),
@@ -42,6 +45,7 @@ class RouteConst {
         )),
     REGISTER_FOLLOWUP: (_) =>
         const MaterialPage(child: RegistrationFollowupScreen()),
-    HOME: (_) => const MaterialPage(child: HomeScreen())
+    HOME: (_) => const MaterialPage(child: HomeScreen()),
+    PROFILE: (_) => const MaterialPage(child: ProfileScreen())
   });
 }

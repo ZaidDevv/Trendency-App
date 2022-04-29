@@ -25,10 +25,11 @@ class App extends StatelessWidget {
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-                primary: AppColor.secondaryColor,
+                primary: Colors.grey,
+                elevation: 2,
                 shape: (RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
-                    side: const BorderSide(color: AppColor.primary)))),
+                    side: const BorderSide(color: Colors.grey, width: 2)))),
           ),
           textTheme: GoogleFonts.kanitTextTheme(
             Theme.of(context).textTheme,
@@ -41,13 +42,11 @@ class App extends StatelessWidget {
               bodyText1: const TextStyle(
                   fontSize: 18, color: AppColor.thirdColor, letterSpacing: 1),
               bodyText2: const TextStyle(
-                  fontSize: 15,
-                  color: AppColor.primaryAccent,
-                  letterSpacing: 1),
+                  fontSize: 15, color: Colors.black, letterSpacing: 1),
               button: const TextStyle(
-                  fontSize: 18, color: AppColor.primary, letterSpacing: 1)),
+                  fontSize: 18, color: AppColor.thirdColor, letterSpacing: 1)),
         ),
-        routeInformationParser: RoutemasterParser(),
+        routeInformationParser: const RoutemasterParser(),
         routerDelegate:
             RoutemasterDelegate(routesBuilder: (context) => RouteConst.routes),
       ),

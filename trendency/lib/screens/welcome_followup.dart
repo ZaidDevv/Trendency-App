@@ -21,8 +21,9 @@ class _WelcomeFollowupState extends State<WelcomeFollowup> {
       extendBodyBehindAppBar: true,
       backgroundColor: AppColor.primary,
       appBar: const TrendencyAppBar(
+        isDismissable: true,
         height: 40,
-        color: AppColor.primary,
+        color: Colors.transparent,
       ),
       body: SafeArea(
         child: Column(
@@ -42,7 +43,7 @@ class _WelcomeFollowupState extends State<WelcomeFollowup> {
                   Icon(
                     FontAwesomeIcons.reddit,
                     size: 65,
-                    color: AppColor.secondaryColor,
+                    color: AppColor.redditColor,
                   ),
                   Icon(
                     FontAwesomeIcons.twitter,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../consts/app_colors.dart';
 
 class TrendencyTextField extends StatefulWidget {
@@ -9,6 +8,7 @@ class TrendencyTextField extends StatefulWidget {
   final double width;
   final bool hidden;
   final ValueSetter<String?> callback;
+  final TextEditingController? controller;
 
   const TrendencyTextField(
       {Key? key,
@@ -17,6 +17,7 @@ class TrendencyTextField extends StatefulWidget {
       this.hidden = false,
       required this.width,
       required this.callback,
+      this.controller,
       required this.isRequired})
       : super(key: key);
 
@@ -28,11 +29,14 @@ class _TrendencyTextFieldState extends State<TrendencyTextField> {
   bool? _passwordVisible;
   bool? _clearTextVisible;
 
-  final TextEditingController _controller = TextEditingController();
+  TextEditingController? _controller;
 
   @override
   void initState() {
     super.initState();
+
+    _controller = widget.controller ?? TextEditingController();
+
     _passwordVisible = widget.hidden;
     _clearTextVisible = false;
   }
@@ -41,7 +45,7 @@ class _TrendencyTextFieldState extends State<TrendencyTextField> {
     if (clearTextVisible && !widget.hidden) {
       return IconButton(
         onPressed: () {
-          _controller.clear();
+          _controller!.clear();
           setState(() {
             _clearTextVisible = false;
           });
@@ -67,7 +71,7 @@ class _TrendencyTextFieldState extends State<TrendencyTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: widget.width,
       child: TextFormField(
         controller: _controller,
@@ -88,6 +92,11 @@ class _TrendencyTextFieldState extends State<TrendencyTextField> {
         style: Theme.of(context).textTheme.bodyText1,
         decoration: InputDecoration(
           suffixIcon: getIconType(_passwordVisible!, _clearTextVisible!),
+          prefixIcon: Icon(
+            widget.icon,
+            color: AppColor.secondaryColor,
+            size: 21,
+          ),
           hintText: widget.hint,
           contentPadding: const EdgeInsets.symmetric(horizontal: 10),
           border: OutlineInputBorder(
@@ -97,12 +106,7 @@ class _TrendencyTextFieldState extends State<TrendencyTextField> {
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide:
-                  const BorderSide(color: AppColor.primaryAccent, width: 2)),
-          icon: Icon(
-            widget.icon,
-            color: AppColor.secondaryColor,
-            size: 21,
-          ),
+                  const BorderSide(color: AppColor.secondaryColor, width: 2)),
           hintStyle: Theme.of(context)
               .textTheme
               .bodyText1

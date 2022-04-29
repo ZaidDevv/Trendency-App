@@ -1,8 +1,17 @@
-import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:routemaster/routemaster.dart';
 import 'package:trendency/consts/app_colors.dart';
+import 'package:trendency/consts/route_consts.dart';
+import 'package:trendency/providers/auth_provider.dart';
+import 'package:trendency/providers/user_provider.dart';
+import 'package:trendency/utils/keep_alive.dart';
 import 'package:trendency/utils/paged_post_list_view.dart';
+import 'package:trendency/utils/trendency_snackbar.dart';
+import 'package:trendency/widgets/trendency_app_bar.dart';
+import 'package:trendency/widgets/trendency_spinner.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -12,86 +21,92 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-  PageController? _pageController;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
-  }
-
-  // @override
-  // void dispose() {
-  //   _pageController!.dispose();
-  //   super.dispose();
-  // }
+  final int _selectedIndex = 0;
+  ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomNavyBar(
-        selectedIndex: _selectedIndex,
-        showElevation: true, // use this to remove appBar's elevation
-        onItemSelected: (index) => setState(() {
-          _selectedIndex = index;
-          _pageController!.animateToPage(index,
-              duration: const Duration(milliseconds: 300), curve: Curves.ease);
-        }),
-        items: [
-          BottomNavyBarItem(
-            icon: Icon(Icons.apps),
-            title: Text('Home'),
-            activeColor: AppColor.secondaryColor,
-          ),
-          BottomNavyBarItem(
-              icon: Icon(Icons.people),
-              title: Text('Users'),
-              activeColor: AppColor.secondaryColor),
-          BottomNavyBarItem(
-              icon: Icon(Icons.message),
-              title: Text('Messages'),
-              activeColor: AppColor.secondaryColor),
-          BottomNavyBarItem(
-              icon: Icon(Icons.settings),
-              title: Text('Settings'),
-              activeColor: AppColor.secondaryColor),
-        ],
-      ),
-      body: Stack(
-        children: [
-          PageView(
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() => _selectedIndex = index);
-            },
-            children: <Widget>[
-              PagedArticleListView(),
-              Container(
-                color: Colors.red,
-              ),
-              Container(
-                color: Colors.green,
-              ),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextButton.icon(
-                          onPressed: () => {},
-                          icon: const Icon(FontAwesomeIcons.doorOpen,
-                              color: AppColor.secondaryColor),
-                          label: Text(
-                            "Logout",
-                            style: Theme.of(context).textTheme.bodyText2,
-                          ))
-                    ]),
-              )
-            ],
-          ),
-        ],
-      ),
-    );
+        appBar: const TrendencyAppBar(
+          isDismissable: false,
+          color: Colors.transparent,
+          title: Icon(FontAwesomeIcons.addressBook),
+          height: 30,
+        ),
+        resizeToAvoidBottomInset: false,
+        bottomNavigationBar: SizedBox(
+          height: 50,
+          child: BottomNavigationBar(
+              selectedFontSize: 0,
+              unselectedFontSize: 0,
+              elevation: 3,
+              items: [
+                BottomNavigationBarItem(
+                  label: "",
+                  icon: SizedBox(
+                    width: 30,
+                    height: 30,
+                    child: InkWell(
+                      onTap: () => {
+                        scrollController.animateTo(0,
+                            duration: const Duration(milliseconds: 900),
+                            curve: Curves.easeIn)
+                      },
+                      child: SvgPicture.asset(
+                        "assets/svgs/home.svg",
+                      ),
+                    ),
+                  ),
+                ),
+                BottomNavigationBarItem(
+                  label: "",
+                  icon: InkWell(
+                    onTap: () =>
+                        Routemaster.of(context).push(RouteConst.PROFILE),
+                    child: CircleAvatar(
+                      radius: 20,
+                      backgroundImage: NetworkImage(
+                          context.read<UserProvider>().userModel!.image_path!),
+                    ),
+                  ),
+                ),
+                BottomNavigationBarItem(
+                    label: "",
+                    icon: IconButton(
+                      iconSize: 25,
+                      icon: Consumer<AuthProvider>(
+                        builder: (context, provider, child) {
+                          if (provider.state == AuthState.failed) {
+                            TrendencySnackbar.show(
+                                title: "Logout has Failed",
+                                content:
+                                    "The username or password you have entered is incorrect!. Please try again",
+                                isError: true);
+                          } else if (provider.state == AuthState.loading) {
+                            return const TrendencySpinner();
+                          } else if (provider.state == AuthState.loggedOut) {
+                            WidgetsBinding.instance!
+                                .addPostFrameCallback((timeStamp) {
+                              Routemaster.of(context).replace(RouteConst.LOGIN);
+                            });
+                          }
+                          return const Icon(
+                            FontAwesomeIcons.doorOpen,
+                            color: AppColor.thirdColor,
+                          );
+                        },
+                      ),
+                      onPressed: () {
+                        var notifer = context.read<AuthProvider>();
+                        notifer.logoutUser();
+                        if (notifer.state == AuthState.loggedOut) {
+                          Routemaster.of(context).replace(RouteConst.LOGIN);
+                        }
+                      },
+                    )),
+              ]),
+        ),
+        body: KeepPageAlive(
+            child: PagedArticleListView(scrollController: scrollController)));
   }
 }

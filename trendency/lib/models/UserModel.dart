@@ -6,22 +6,20 @@ part 'UserModel.g.dart';
 class UserModel {
   final String username;
   final String? id;
-  final List<LinkedAccountsModel> linked_accounts;
+  List<LinkedAccountsModel> linked_accounts = [];
   final String email;
   final String? password;
   @JsonKey(name: "profile_image")
   final String? image_path;
   String? accessToken;
   String? refreshToken;
-
-  void set linked_accounts(List<LinkedAccountsModel> linked_accounts) {
-    this.linked_accounts = linked_accounts;
-  }
+  bool? is_verified;
 
   UserModel(
       {required this.username,
       this.id,
       required this.email,
+      this.is_verified,
       this.password,
       this.image_path,
       this.accessToken,
@@ -35,9 +33,9 @@ class UserModel {
 
 @JsonSerializable()
 class LinkedAccountsModel {
-  final String platform;
-  final String id;
-  LinkedAccountsModel({required this.id, required this.platform});
+  String? platform;
+  String? id;
+  LinkedAccountsModel({this.id, this.platform});
 
   factory LinkedAccountsModel.fromJson(Map<String, dynamic> json) =>
       _$LinkedAccountsModelFromJson(json);

@@ -26,7 +26,8 @@ class UserProvider with ChangeNotifier {
       var response =
           await client.get(endpoint: "/api/user/$id", withAuth: true);
       if (response.statusCode == 200) {
-        final user = response.data;
+        var user = response.data;
+        print(response.data);
         _userModel = UserModel.fromJson(user);
         _state = UserState.loaded;
         notifyListeners();
@@ -47,7 +48,6 @@ class UserProvider with ChangeNotifier {
       var response =
           await client.get(endpoint: "/api/reddit/threads", withAuth: true);
       if (response.statusCode == 200) {
-        print(response.data);
       } else {
         _state = UserState.failed;
         throw HttpException("${response.data}");

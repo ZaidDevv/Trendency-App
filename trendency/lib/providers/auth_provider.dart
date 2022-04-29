@@ -3,12 +3,13 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:trendency/models/UserModel.dart';
+import 'package:trendency/utils/api_client.dart';
 import 'package:trendency/utils/failure.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
 
-enum AuthState { initial, loading, loggedIn, registered, failed }
+enum AuthState { initial, loading, loggedIn, registered, failed, loggedOut }
 
 class AuthProvider with ChangeNotifier {
   UserModel? _userModel;
@@ -17,32 +18,31 @@ class AuthProvider with ChangeNotifier {
   AuthState _state = AuthState.initial;
   AuthState get state => _state;
 
-  bool _isRegistered = false;
+  final bool _isRegistered = false;
   bool get isRegistered => _isRegistered;
 
   Failure? _failure;
   Failure? get failure => _failure;
 
-  Future<void> loginUser(credentials) async {
+  final ApiClient _client = ApiClient();
+
+  Future<void> loginUser(Map<String, dynamic> credentials) async {
     try {
       _state = AuthState.loading;
       notifyListeners();
-      final response = await http.post(
-          Uri.parse("${dotenv.env['BASE_URL']!}/api/user/auth/login"),
-          headers: {
-            HttpHeaders.contentTypeHeader: "application/json",
-          },
-          body: jsonEncode(credentials));
-      if (response.statusCode == 200) {
-        final user = json.decode(response.body);
-        _userModel = UserModel.fromJson(user);
 
-        persistAuthCredentials(user["accessToken"], user["refreshToken"]);
+      final response = await _client.post(
+          endpoint: "/api/user/auth/login", body: credentials, withAuth: false);
+
+      if (response.statusCode == 200) {
+        _userModel = UserModel.fromJson(response.data);
+        await persistAuthCredentials(_userModel!.accessToken!,
+            _userModel!.refreshToken!, _userModel!.username);
         _state = AuthState.loggedIn;
         notifyListeners();
       } else {
         _state = AuthState.failed;
-        throw HttpException("${response.body}");
+        throw HttpException("${response.data}");
       }
     } catch (e) {
       _state = AuthState.failed;
@@ -78,8 +78,8 @@ class AuthProvider with ChangeNotifier {
         if (response.statusCode == 200) {
           _userModel = UserModel.fromJson(result);
           print(userModel!.accessToken!);
-          persistAuthCredentials(
-              _userModel!.accessToken!, _userModel!.refreshToken!);
+          persistAuthCredentials(_userModel!.accessToken!,
+              _userModel!.refreshToken!, _userModel!.username);
           _userModel!.accessToken = result["accessToken"];
           _userModel!.refreshToken = result["refreshToken"];
           _state = AuthState.registered;
@@ -97,12 +97,39 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> persistAuthCredentials(
-      String accessToken, String refreshToken) async {
-    const storage = FlutterSecureStorage();
+  Future<void> logoutUser() async {
+    try {
+      _state = AuthState.loading;
+      notifyListeners();
+      final response =
+          await _client.post(endpoint: "/api/user/auth/logout", withAuth: true);
+      if (response.statusCode == 200) {
+        await clearAuthCredentials();
+        _state = AuthState.loggedOut;
+        notifyListeners();
+      } else {
+        _state = AuthState.failed;
+        throw HttpException("${response.data}");
+      }
+    } catch (e) {
+      _state = AuthState.failed;
+      _failure = Failure(e.toString());
+      notifyListeners();
+    }
+  }
 
-    await storage.write(key: "refreshToken", value: refreshToken);
+  Future<void> persistAuthCredentials(
+      String accessToken, String refreshToken, String username) async {
+    const storage = FlutterSecureStorage();
     await storage.write(key: "accessToken", value: accessToken);
+    await storage.write(key: "refreshToken", value: refreshToken);
+    await storage.write(key: "username", value: username);
+    return Future.value();
+  }
+
+  Future<void> clearAuthCredentials() async {
+    const storage = FlutterSecureStorage();
+    await storage.deleteAll();
     return Future.value();
   }
 }

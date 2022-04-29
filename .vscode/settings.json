@@ -1,5 +1,8 @@
 {
     "cSpell.words": [
         "trendency"
-    ]
+    ],
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true
+    },
 }

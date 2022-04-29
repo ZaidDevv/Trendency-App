@@ -31,7 +31,7 @@ class TrendencyPhoto extends StatelessWidget {
           backgroundDecoration: backgroundDecoration,
           minScale: minScale,
           maxScale: maxScale,
-          filterQuality: FilterQuality.high,
+          filterQuality: FilterQuality.medium,
           customSize: const Size(400, 350),
           heroAttributes: PhotoViewHeroAttributes(tag: title),
         ),

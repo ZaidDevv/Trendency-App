@@ -1,18 +1,23 @@
-import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
-import 'package:trendency/models/PostModel.dart';
+import 'package:trendency/models/Post.dart';
+import 'package:trendency/models/RedditThread.dart';
+import 'package:trendency/models/twitter/tweet_model.dart';
 import 'package:trendency/utils/api_client.dart';
 import 'package:trendency/utils/failure.dart';
 
 enum PostState { initial, loading, loaded, failed }
 
 class PostProvider with ChangeNotifier {
-  List<PostModel> _posts = [];
-  List<PostModel> get items => _posts;
+  List<Post> _posts = [];
+  List<Post> get items => _posts;
 
   PostState _state = PostState.initial;
   PostState get state => _state;
+
+  String? nextRedditPost;
+  String? nextTwitterPost;
 
   bool _hasMore = true;
   bool get hasMore => this._hasMore;
@@ -21,17 +26,38 @@ class PostProvider with ChangeNotifier {
   Failure? get failure => _failure;
   final ApiClient _client = ApiClient();
 
-  Future<Iterable<PostModel>> getPosts(
-      {String? after, required int limit, int? count}) async {
+  Future<List<Post>> getPosts(
+      {String? redditAfter,
+      String? twitterAfter,
+      required int limit,
+      int? count}) async {
     try {
       var response = await _client.get(
-          endpoint: "/api/timeline?after=${after!}&limit=$limit&count=$count",
+          endpoint: "/api/timeline",
+          queryParams: {
+            "reddit_after": redditAfter,
+            "twitter_after": twitterAfter,
+            "limit": limit,
+            "count": count
+          },
           withAuth: true);
 
       if (response.statusCode == 200) {
-        var posts = (response.data["redditPosts"] as List)
-            .map((post) => PostModel.fromJson(post));
+        print(response.data);
 
+        var posts = (response.data["posts"] as List).map((post) {
+          print(post);
+
+          if (post.containsKey("ups")) {
+            return RedditThread.fromJson(post);
+          } else {
+            return TweetModel.fromJson(post);
+          }
+        }).toList();
+        print(response.data);
+
+        nextRedditPost = response.data["nextReddit"];
+        nextTwitterPost = response.data["nextTwitter"];
         _state = PostState.loaded;
         return posts;
       } else {

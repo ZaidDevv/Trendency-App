@@ -1,10 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';
@@ -12,11 +9,9 @@ import 'package:trendency/consts/app_colors.dart';
 import 'package:trendency/consts/route_consts.dart';
 import 'package:trendency/models/UserModel.dart';
 import 'package:trendency/providers/auth_provider.dart';
-import 'package:trendency/screens/registration_followup.dart';
 import 'package:trendency/utils/trendency_snackbar.dart';
 import 'package:trendency/widgets/trendency_app_bar.dart';
 import 'package:trendency/widgets/trendency_text_field.dart';
-import 'package:bottom_drawer/bottom_drawer.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({Key? key}) : super(key: key);
@@ -31,8 +26,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   String? _password;
   String? _email;
   String? _image;
-
-  BottomDrawerController controller = BottomDrawerController();
 
   final ImagePicker _picker = ImagePicker();
   var notifier;
@@ -72,7 +65,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   void dispose() {
     notifier.removeListener(listener);
-    controller.close();
     super.dispose();
   }
 
@@ -80,8 +72,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: const TrendencyAppBar(
+          isDismissable: true,
           height: 40,
-          color: AppColor.primary,
+          color: Colors.transparent,
         ),
         resizeToAvoidBottomInset: false,
         backgroundColor: AppColor.primary,
@@ -171,7 +164,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   buildBottomSheet(BuildContext context) async {
     showModalBottomSheet(
         backgroundColor: AppColor.secondaryColor,
-        barrierColor: AppColor.primaryAccent.withOpacity(.1),
+        barrierColor: AppColor.secondaryColor.withOpacity(.1),
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(10), topRight: Radius.circular(10))),

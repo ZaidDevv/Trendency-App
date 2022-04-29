@@ -10,6 +10,9 @@ import 'package:trendency/app.dart';
 import 'package:trendency/providers/auth_provider.dart';
 import 'package:trendency/providers/post_provider.dart';
 import 'package:trendency/providers/reddit_post_provider.dart';
+import 'package:trendency/providers/saved_threads_provider.dart';
+import 'package:trendency/providers/saved_tweets_provider.dart';
+import 'package:trendency/providers/twitter_post_provider.dart';
 import 'package:trendency/providers/user_provider.dart';
 
 void main() async {
@@ -24,6 +27,9 @@ void main() async {
     ChangeNotifierProvider(create: (context) => UserProvider()),
     ChangeNotifierProvider(create: (context) => RedditPostProvider()),
     ChangeNotifierProvider(create: (context) => PostProvider()),
+    ChangeNotifierProvider(create: (context) => TwitterPostProvider()),
+    ChangeNotifierProvider(create: (context) => SavedTweetsProvider()),
+    ChangeNotifierProvider(create: (context) => SavedThreadsProvider()),
   ], child: const GetMaterialApp(home: App())));
 }
 
@@ -40,12 +46,8 @@ Future<void> initializeWebAppView() async {
       AndroidServiceWorkerController serviceWorkerController =
           AndroidServiceWorkerController.instance();
 
-      serviceWorkerController.serviceWorkerClient = AndroidServiceWorkerClient(
-        shouldInterceptRequest: (request) async {
-          print(request);
-          return null;
-        },
-      );
+      serviceWorkerController.serviceWorkerClient =
+          AndroidServiceWorkerClient();
     }
   }
 }

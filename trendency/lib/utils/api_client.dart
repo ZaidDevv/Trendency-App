@@ -5,6 +5,7 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:trendency/utils/failure.dart';
 
 class ApiClient {
   late Dio _dio;
@@ -18,7 +19,7 @@ class ApiClient {
   factory ApiClient() => _instance;
 
   ApiClient._internal() {
-    var cookieJar = CookieJar();
+    var cookieJar = CookieJar(ignoreExpires: true);
     _dio = Dio(options);
     _dio.interceptors.add(CookieManager(cookieJar));
 
@@ -28,8 +29,8 @@ class ApiClient {
 
   Future<void> refreshTokenInterceptor(
       DioError error, ErrorInterceptorHandler handler) async {
-    print(error.message);
     try {
+      print(error.message);
       if (error.response!.statusCode == 401) {
         String? refreshToken =
             await const FlutterSecureStorage().read(key: "refreshToken");
@@ -38,15 +39,17 @@ class ApiClient {
               'refreshToken': refreshToken!,
             }));
         if (response.statusCode == 200) {
-          print(response.data);
           await persistAuthCredentials(
               response.data["accessToken"], response.data["refreshToken"]);
           options.headers["authorization"] = response.data["accessToken"];
           handler.resolve(response);
         }
+      } else {
+        handler.next(error);
       }
     } on DioError catch (error) {
       handler.reject(error);
+      throw Failure(error.toString());
     }
   }
 
@@ -67,19 +70,22 @@ class ApiClient {
             "authorization":
                 withAuth ? "Bearer ${await getAuthenticationHeader()}" : "",
           }));
-      print(response.data);
       return response;
     } on DioError catch (e) {
       print(e.response);
-      throw e;
+      rethrow;
     }
   }
 
   Future<Response> post(
       {required String endpoint,
       required bool withAuth,
-      Map<String, dynamic>? body,
-      Map<String, dynamic>? queryParams}) async {
+      var body,
+      Map<String, dynamic>? queryParams,
+      String? contentType}) async {
+    if (contentType == Headers.formUrlEncodedContentType && body != null) {
+      body = FormData.fromMap(body);
+    }
     try {
       Response response = await _dio.post(endpoint,
           data: body,
@@ -88,9 +94,10 @@ class ApiClient {
             "authorization":
                 withAuth ? "Bearer ${await getAuthenticationHeader()}" : "",
           }));
+      // print(response);
       return response;
-    } on DioError catch (e) {
-      throw e.message;
+    } catch (e) {
+      rethrow;
     }
   }
 

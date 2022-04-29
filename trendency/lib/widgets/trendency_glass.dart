@@ -32,7 +32,7 @@ class GlassMorphism extends StatelessWidget {
             gradient: LinearGradient(
               colors: [
                 AppColor.primary.withOpacity(start),
-                AppColor.primaryAccent.withOpacity(end),
+                AppColor.secondaryColor.withOpacity(end),
               ],
               begin: AlignmentDirectional.topStart,
               end: AlignmentDirectional.bottomEnd,

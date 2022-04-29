@@ -3,9 +3,12 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:trendency/consts/app_colors.dart';
 import 'package:trendency/consts/route_consts.dart';
+import 'package:trendency/providers/auth_provider.dart';
+import 'package:trendency/providers/user_provider.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -20,14 +23,19 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((_) async {
       var storage = const FlutterSecureStorage();
-      var accessToken = await storage.read(key: "accessToken").then((value) {
-        if (value == null) {
+      await storage.read(key: "accessToken").then((value) {
+        if (value == null || Jwt.isExpired(value)) {
+          FlutterNativeSplash.remove();
           return;
-        } else if (!Jwt.isExpired(value)) {
-          // Routemaster.of(context).replace(RouteConst.HOME);
         }
+        final decodedToken = Jwt.parseJwt(value);
+        Provider.of<UserProvider>(context, listen: false)
+            .fetchProfile(decodedToken["id"])
+            .then((value) => Routemaster.of(context).replace(RouteConst.HOME));
+        Future.delayed(const Duration(seconds: 2), () {
+          FlutterNativeSplash.remove();
+        });
       });
-      Future.delayed(Duration(seconds: 1), () => FlutterNativeSplash.remove());
 
       setState(() {
         _animatedStyle =

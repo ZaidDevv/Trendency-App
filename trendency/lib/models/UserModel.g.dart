@@ -10,6 +10,7 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       username: json['username'] as String,
       id: json['id'] as String?,
       email: json['email'] as String,
+      is_verified: json['is_verified'] as bool?,
       password: json['password'] as String?,
       image_path: json['profile_image'] as String?,
       accessToken: json['accessToken'] as String?,
@@ -28,12 +29,13 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'profile_image': instance.image_path,
       'accessToken': instance.accessToken,
       'refreshToken': instance.refreshToken,
+      'is_verified': instance.is_verified,
     };
 
 LinkedAccountsModel _$LinkedAccountsModelFromJson(Map<String, dynamic> json) =>
     LinkedAccountsModel(
-      id: json['id'] as String,
-      platform: json['platform'] as String,
+      id: json['id'] as String?,
+      platform: json['platform'] as String?,
     );
 
 Map<String, dynamic> _$LinkedAccountsModelToJson(

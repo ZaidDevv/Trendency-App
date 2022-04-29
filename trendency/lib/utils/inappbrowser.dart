@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:provider/provider.dart';
 import 'package:routemaster/routemaster.dart';
+import 'package:trendency/consts/app_colors.dart';
 import 'package:trendency/providers/auth_provider.dart';
 import 'package:trendency/providers/user_provider.dart';
 import 'package:trendency/utils/trendency_snackbar.dart';
@@ -22,10 +23,12 @@ class TrendencyBrowser extends StatefulWidget {
 }
 
 class _TrendencyBrowserState extends State<TrendencyBrowser> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const TrendencyAppBar(
-        color: Colors.white,
+        isDismissable: true,
+        color: Colors.transparent,
         height: 40,
       ),
       body: InAppWebView(

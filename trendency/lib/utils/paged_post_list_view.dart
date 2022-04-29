@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:trendency/models/PostModel.dart';
+import 'package:trendency/consts/app_colors.dart';
+import 'package:trendency/models/Post.dart';
+import 'package:trendency/models/RedditThread.dart';
+import 'package:trendency/models/twitter/tweet_model.dart';
 import 'package:trendency/providers/post_provider.dart';
+import 'package:trendency/providers/user_provider.dart';
 import 'package:trendency/widgets/error_indicator.dart';
+import 'package:trendency/widgets/posts/create_post.dart';
 import 'package:trendency/widgets/posts/reddit_post.dart';
+import 'package:trendency/widgets/posts/twitter_post.dart';
 
-// 1
 class PagedArticleListView extends StatefulWidget {
-  const PagedArticleListView({
-    Key? key,
-  }) : super(key: key);
+  const PagedArticleListView({Key? key, required this.scrollController})
+      : super(key: key);
+
+  final ScrollController scrollController;
 
   @override
   _PagedArticleListViewState createState() => _PagedArticleListViewState();
@@ -21,7 +28,7 @@ class _PagedArticleListViewState extends State<PagedArticleListView> {
 
   @override
   void initState() {
-    _pagingController = PagingController<String, PostModel>(
+    _pagingController = PagingController<String, Post>(
       firstPageKey: "",
     );
     _pagingController.addPageRequestListener((pageKey) {
@@ -30,24 +37,24 @@ class _PagedArticleListViewState extends State<PagedArticleListView> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    _pagingController.dispose();
+    super.dispose();
+  }
+
   Future<void> _fetchPage(String pageKey) async {
     try {
       var provider = context.read<PostProvider>();
       final previouslyFetchedItemsCount =
           _pagingController.itemList?.length ?? 0;
-      final items = await provider.getPosts(
-          after: pageKey, limit: 30, count: previouslyFetchedItemsCount);
-
-      var itemsList = items.toList();
-
-      final isLastPage = !provider.hasMore;
-
-      if (isLastPage) {
-        _pagingController.appendLastPage(itemsList);
-      } else {
-        final nextPageKey = "t3_" + itemsList[itemsList.length - 1].id;
-        _pagingController.appendPage(itemsList, nextPageKey);
-      }
+      var items;
+      items = await provider.getPosts(
+          twitterAfter: provider.nextTwitterPost ?? "",
+          redditAfter: provider.nextRedditPost ?? "",
+          limit: 30,
+          count: previouslyFetchedItemsCount);
+      _pagingController.appendPage(items, "");
     } catch (error) {
       _pagingController.error = error;
     }
@@ -59,14 +66,36 @@ class _PagedArticleListViewState extends State<PagedArticleListView> {
             () => _pagingController.refresh(),
           ),
       child: PagedListView.separated(
+          scrollController: widget.scrollController,
           pagingController: _pagingController,
-          padding: const EdgeInsets.all(5),
           separatorBuilder: (context, index) => const SizedBox(
-                height: 16,
+                height: 10,
               ),
-          builderDelegate: PagedChildBuilderDelegate<PostModel>(
-            itemBuilder: (context, post, index) => RedditPost(post: post),
-            animateTransitions: true,
+          builderDelegate: PagedChildBuilderDelegate<Post>(
+            itemBuilder: (context, post, index) {
+              if (index == 0) {
+                if (post.type == "twitter") {
+                  return Column(
+                    children: [
+                      const CreatePost(),
+                      TwitterPost(tweet: post as TweetModel)
+                    ],
+                  );
+                } else {
+                  return Column(
+                    children: [
+                      CreatePost(),
+                      RedditPost(post: post as RedditThread)
+                    ],
+                  );
+                }
+              }
+              if (post.type == "twitter") {
+                return TwitterPost(tweet: post as TweetModel);
+              } else {
+                return RedditPost(post: post as RedditThread);
+              }
+            },
             noItemsFoundIndicatorBuilder: (context) => ErrorIndicator(
               onTryAgain: () => _pagingController.refresh(),
             ),
