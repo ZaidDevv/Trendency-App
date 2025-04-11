@@ -60,10 +60,6 @@ Trendency is built using modern web technologies:
 ![landing screen](https://i.imgur.com/uPlyVjh.png) ![home screen](https://i.imgur.com/xMLdcrT.png) ![call to action screen](https://i.imgur.com/Kd4pGFl.png) 
 
 
-## Contributing
-
-I welcome contributions from the community to make Trendency even better. If you'd like to contribute, please follow our [contribution guidelines](CONTRIBUTING.md).
-
 ## License
 
 Trendency is released under the [Apache License](LICENSE.md). You are free to use, modify, and distribute the application, subject to the terms of the license.
